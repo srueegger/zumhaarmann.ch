@@ -70,12 +70,9 @@ ddev wp post create --post_type=page --post_title='Impressum' --post_status=publ
 ddev wp option update show_on_front 'page'
 ddev wp option update page_on_front $(ddev wp post list --post_type=page --name=home --field=ID --posts_per_page=1)
 
-# Hauptmenü mit Anchor-Links zu den One-Pager-Sektionen
-ddev wp menu create "Hauptmenü"
-for item in "Willkommen:#willkommen" "Termin:#termin" "Services:#services" "Über mich:#ueber-mich" "Anreise:#anreise" "Galerie:#galerie"; do
-  ddev wp menu item add-custom hauptmenu "${item%%:*}" "${item##*:}"
-done
-ddev wp menu location assign hauptmenu primary
+# Home-Page mit allen Sektionen befüllen (Hero, Willkommen, Termin,
+# Services, Über mich, Anreise, Galerie als editierbare Block-Liste)
+ddev wp eval-file tools/seed-home-content.php
 ```
 
 ---
@@ -90,6 +87,8 @@ zumhaarmann.ch/
 │   └── wp-content/
 │       ├── themes/haarmann/        # ← versioniert
 │       └── plugins/haarmann-blocks/ # ← versioniert (sobald angelegt)
+├── tools/                          # WP-CLI / Setup-Helper
+│   └── seed-home-content.php       # Home-Page mit allen Sektionen befüllen
 ├── .gitignore
 ├── CLAUDE.md                       # Hinweise für Claude Code
 └── README.md

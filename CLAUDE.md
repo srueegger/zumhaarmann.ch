@@ -39,17 +39,56 @@ Wenn du ein neues Theme-File anlegst, achte darauf dass es in einen versionierte
 
 ## Theme-Konventionen
 
-### Pattern-First
+### Architektur: Page-Content first, Template = Shell
 
-**Standard-Gutenberg-Blocks reichen für alles, was bisher gebaut ist.** Jede Sektion ist ein Pattern unter `patterns/*.php`. Die Front-Page ist eine schlanke Komposition dieser Patterns:
+**Die Inhalte gehören in den Page-Content, nicht ins Template.** Der Kunde
+muss die Startseite über `WP-Admin → Seiten → Home` (oder den Site-Editor)
+ganz normal als Block-Liste bearbeiten können.
 
-```html
-<!-- wp:pattern {"slug":"haarmann/welcome"} /-->
-<!-- wp:pattern {"slug":"haarmann/booking"} /-->
-…
+Konkret:
+
+- `templates/front-page.html` ist eine **dünne Hülle** — nur Header,
+  ein `<main>`-Wrapper mit `<!-- wp:post-content /-->`, und Footer.
+  Keine `<!-- wp:pattern -->`-Refs, keine festverdrahteten Sektionen.
+- Die **Home-Page** (`page_on_front`) hat alle Sektionen direkt im
+  `post_content` als Block-Markup. Jede Sektion ist eine Group mit
+  `align:full` und einer aussagekräftigen `metadata.name` (z. B.
+  "Willkommen", "Termin vereinbaren") — die erscheint dann auch im
+  List-View des Editors.
+- Patterns unter `patterns/*.php` sind **Vorlagen für den Inserter**.
+  Sie tauchen unter "Patterns → Haarmann" auf und können vom Kunden
+  beliebig oft eingefügt werden, falls eine neue Sektion nötig ist.
+
+Wenn der Kunde eine Sektion im Editor löscht / ändert / hinzufügt,
+ändert sich nur die Page — Theme-Code bleibt unverändert.
+
+### Initiales Seeding der Home-Page
+
+Sobald die Patterns aktualisiert wurden oder die Datenbank frisch ist,
+kann die Home-Page mit allen Sektionen neu befüllt werden:
+
+```bash
+ddev wp eval-file tools/seed-home-content.php
 ```
 
-Wenn du eine neue Sektion brauchst → neuer Pattern-File. Wenn ein Pattern editor-seitig schwer zu pflegen ist → Custom Block (siehe unten).
+Das Script rendert alle sieben Patterns einmal und schreibt das Resultat
+in den `post_content` der Home-Page (ID aus `page_on_front`-Option).
+Idempotent — beim zweiten Aufruf wird der Inhalt überschrieben.
+
+**Achtung:** Wenn der Kunde Inhalte editiert hat, würde das Script die
+Änderungen platt machen. Vor produktivem Einsatz also nur als
+Setup-Tool nutzen, nicht im laufenden Betrieb.
+
+### Pattern-First (für neue Sektionen)
+
+**Standard-Gutenberg-Blocks reichen für alles, was bisher gebaut ist.**
+Eine neue Sektion → neuer Pattern-File unter `patterns/<slug>.php`.
+Sobald die Pattern-Datei existiert, ist sie automatisch im Inserter
+verfügbar.
+
+Wenn ein Pattern editor-seitig schwer zu pflegen ist (z. B. weil die
+Block-Struktur zu fragil ist und beim Editieren leicht kaputt geht)
+→ Custom Block (siehe unten).
 
 ### Wann Custom Blocks?
 
@@ -148,10 +187,10 @@ Wenn das Thema umgesetzt wird:
 ## Häufige Fallstricke beim Arbeiten
 
 1. **Cache nach `theme.json`-Änderungen** — Site-Editor zeigt manchmal alte Werte. Lösung: `ddev wp transient delete --all` oder Browser-Hard-Reload.
-2. **`<!-- wp:pattern -->` rendert nichts** — wahrscheinlich ist der `slug` falsch. Slug = Wert aus dem Pattern-Header (`Slug: haarmann/<name>`).
+2. **Home-Page im Editor leer** — wenn `templates/front-page.html` Sektionen direkt enthält statt `<!-- wp:post-content /-->`, sieht der Kunde im Page-Editor nichts. Immer: Sektionen in den Page-Content, Template = Shell.
 3. **Block-Markup im Pattern muss valide sein** — wenn das Markup kaputt ist, schluckt WP den ganzen Block lautlos. Im Zweifel den Pattern in einer leeren Page einfügen und den HTML-Output mit `view-source:` prüfen.
-4. **Pattern-PHP wird beim Rendern ausgeführt** — `<?php ... ?>`-Blöcke und `esc_html_e()` funktionieren wie in normalen Templates.
-5. **Datenbank-State nicht im Repo** — beim Klonen muss der Empfänger die Pages und das Menü selbst anlegen (oder einen DB-Dump importieren).
+4. **Pattern-PHP wird beim Rendern ausgeführt** — `<?php ... ?>`-Blöcke und `esc_html_e()` funktionieren wie in normalen Templates. Beim Einfügen via Inserter wird das PHP einmalig aufgelöst und das Ergebnis als statisches Block-Markup in den Page-Content geschrieben.
+5. **Datenbank-State nicht im Repo** — beim Klonen muss der Empfänger die Pages und das Menü selbst anlegen (oder einen DB-Dump importieren). Für die Home-Page hilft `tools/seed-home-content.php`.
 
 ## Hilfreiche Befehle
 
