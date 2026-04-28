@@ -1,0 +1,38 @@
+# DDEV
+.ddev/.dbimports/
+.ddev/db_snapshots/
+.ddev/import-db/
+.ddev/import-files/
+.ddev/.global_commands/
+.ddev/.homeadditions/
+.ddev/apache/
+.ddev/mutagen/
+.ddev/db-build/
+.ddev/web-build/Dockerfile.example
+.ddev/.gitignore
+.ddev/providers/
+.ddev/traefik/
+
+# WordPress core (we only track our custom theme + plugin)
+public_html/*
+!public_html/wp-content/
+public_html/wp-content/*
+!public_html/wp-content/themes/
+public_html/wp-content/themes/*
+!public_html/wp-content/themes/haarmann/
+!public_html/wp-content/plugins/
+public_html/wp-content/plugins/*
+!public_html/wp-content/plugins/haarmann-blocks/
+
+# Build artefacts inside theme/plugin
+public_html/wp-content/themes/haarmann/node_modules/
+public_html/wp-content/plugins/haarmann-blocks/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.sublime-*

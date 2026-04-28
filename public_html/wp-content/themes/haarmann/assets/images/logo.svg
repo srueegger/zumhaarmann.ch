@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Zum Haarmann's Barber">
+	<circle cx="100" cy="100" r="98" fill="#FFFFFF" stroke="#1A1612" stroke-width="2"/>
+	<circle cx="100" cy="100" r="88" fill="none" stroke="#C9A876" stroke-width="1.5"/>
+	<text x="100" y="50" text-anchor="middle" font-family="'Cinzel', 'Trajan Pro', serif" font-size="14" font-weight="600" fill="#1A1612" letter-spacing="2">DER HAARMANN'S</text>
+	<g transform="translate(100, 105)">
+		<!-- razor + scissors crossed -->
+		<g stroke="#1A1612" stroke-width="3" fill="none" stroke-linecap="round">
+			<line x1="-30" y1="-15" x2="30" y2="15"/>
+			<line x1="-30" y1="15" x2="30" y2="-15"/>
+			<circle cx="-30" cy="-15" r="6"/>
+			<circle cx="-30" cy="15" r="6"/>
+		</g>
+	</g>
+	<text x="100" y="160" text-anchor="middle" font-family="'Cinzel', 'Trajan Pro', serif" font-size="18" font-weight="600" fill="#1A1612" letter-spacing="6">BARBER</text>
+</svg>
