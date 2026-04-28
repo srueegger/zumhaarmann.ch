@@ -15,10 +15,6 @@
 
 	<!-- wp:group {"style":{"spacing":{"blockGap":"0px"}},"className":"price-list price-list--haare","layout":{"type":"constrained"}} -->
 	<div class="wp-block-group price-list price-list--haare">
-		<!-- wp:heading {"level":3,"textColor":"cream","fontSize":"medium","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em","fontWeight":"500"},"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
-		<h3 class="wp-block-heading has-cream-color has-text-color has-medium-font-size" style="margin-bottom:var(--wp--preset--spacing--20);font-weight:500;letter-spacing:0.1em;text-transform:uppercase"><?php esc_html_e( 'Haare', 'haarmann' ); ?></h3>
-		<!-- /wp:heading -->
-
 		<?php
 		$haare = array(
 			array( 'Haarschnitt', 73 ),
@@ -46,10 +42,6 @@
 
 	<!-- wp:group {"style":{"spacing":{"blockGap":"0px"}},"className":"price-list price-list--bart","layout":{"type":"constrained"}} -->
 	<div class="wp-block-group price-list price-list--bart">
-		<!-- wp:heading {"level":3,"textColor":"cream","fontSize":"medium","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em","fontWeight":"500"},"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
-		<h3 class="wp-block-heading has-cream-color has-text-color has-medium-font-size" style="margin-bottom:var(--wp--preset--spacing--20);font-weight:500;letter-spacing:0.1em;text-transform:uppercase"><?php esc_html_e( 'Bart', 'haarmann' ); ?></h3>
-		<!-- /wp:heading -->
-
 		<?php
 		$bart = array(
 			array( 'Bartschnitt', 55 ),
@@ -75,10 +67,6 @@
 
 	<!-- wp:group {"style":{"spacing":{"blockGap":"0px"}},"className":"price-list price-list--kombi","layout":{"type":"constrained"}} -->
 	<div class="wp-block-group price-list price-list--kombi">
-		<!-- wp:heading {"level":3,"textColor":"cream","fontSize":"medium","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em","fontWeight":"500"},"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
-		<h3 class="wp-block-heading has-cream-color has-text-color has-medium-font-size" style="margin-bottom:var(--wp--preset--spacing--20);font-weight:500;letter-spacing:0.1em;text-transform:uppercase"><?php esc_html_e( 'Kombinationen', 'haarmann' ); ?></h3>
-		<!-- /wp:heading -->
-
 		<?php
 		$kombi = array(
 			array( 'Haarschnitt & Bart', 108 ),

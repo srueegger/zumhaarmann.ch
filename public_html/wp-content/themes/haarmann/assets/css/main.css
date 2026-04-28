@@ -110,14 +110,20 @@ body {
 	align-items: baseline;
 }
 
-.price-list__row > *:last-child {
+.price-list__row > p:first-of-type {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.price-list__row > p:last-of-type {
+	flex: 0 0 auto;
 	color: var(--wp--preset--color--gold);
 	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
 }
 
 .price-list + .price-list {
-	margin-top: var(--wp--preset--spacing--40);
+	margin-top: var(--wp--preset--spacing--50);
 }
 
 /* -----------------------------------------------------------------------------
