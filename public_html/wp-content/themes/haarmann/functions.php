@@ -41,21 +41,14 @@ add_action( 'after_setup_theme', 'haarmann_setup' );
 /**
  * Enqueue front-end assets.
  *
- * Note: Google Fonts are loaded from googleapis.com for development convenience.
- * For production / GDPR compliance, switch to bundled woff2 files in assets/fonts/.
+ * Schriften werden via theme.json fontFace lokal aus assets/fonts/ geladen
+ * (WordPress Font-Library-API seit 6.5) — kein Google Fonts CDN nötig.
  */
 function haarmann_enqueue_assets(): void {
 	wp_enqueue_style(
-		'haarmann-fonts',
-		'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap',
-		array(),
-		null
-	);
-
-	wp_enqueue_style(
 		'haarmann-style',
 		get_stylesheet_uri(),
-		array( 'haarmann-fonts' ),
+		array(),
 		HAARMANN_THEME_VERSION
 	);
 
@@ -67,20 +60,6 @@ function haarmann_enqueue_assets(): void {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'haarmann_enqueue_assets' );
-
-/**
- * Preconnect to Google Fonts to shave off initial latency.
- */
-function haarmann_resource_hints( array $urls, string $relation_type ): array {
-	if ( 'preconnect' === $relation_type ) {
-		$urls[] = array(
-			'href'        => 'https://fonts.gstatic.com',
-			'crossorigin' => 'anonymous',
-		);
-	}
-	return $urls;
-}
-add_filter( 'wp_resource_hints', 'haarmann_resource_hints', 10, 2 );
 
 /**
  * Enqueue editor assets so block previews look like the front-end.

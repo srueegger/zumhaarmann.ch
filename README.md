@@ -133,14 +133,13 @@ haarmann/
 ### Designsystem
 
 - **Farben:** `dark` (#1A1612), `beige` (#B59572), `gold` (#C9A876), `cream` (#E8DDC8), `white`, `black`
-- **Schriften:**
-  - `display` — Cinzel (Roman Serif, all caps für Section-Titel)
-  - `subhead` — Cormorant Garamond (zarte Serif für "Über mich"/"Galerie")
-  - `body` — Inter (klare Sans für Fliesstext und UI)
+- **Schriften:** zwei Familien, Brand-Fonts via lokale woff2 + WordPress Font-API
+  - `display` — **Asul Bold** (Regular + Bold) — alle Headlines, uppercase + Letter-Spacing 0.06em
+  - `body` — **Urbanist** (Variable Font 100–900) — Fliesstext, UI, Navigation
 - **Spacings:** fluide Tokens `10`–`70`, alle mit `clamp(...)` für lineares Skalieren von Mobile zu Desktop
 - **Schriftgrössen:** alle ab `medium` mit `fluid: true`
 
-Schriften werden zur Zeit von Google Fonts geladen — vor Produktiv-Launch sollten sie lokal gebundlet werden (siehe [`CLAUDE.md`](CLAUDE.md)).
+Schriften werden über `fontFace`-Einträge in `theme.json` aus `assets/fonts/` geladen — keine Drittanbieter-CDN, keine DSGVO-Hürde. Siehe [`CLAUDE.md`](CLAUDE.md) wie weitere Cuts hinzugefügt werden.
 
 ### Patterns
 

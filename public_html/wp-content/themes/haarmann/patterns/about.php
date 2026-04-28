@@ -9,8 +9,8 @@
 ?>
 <!-- wp:group {"tagName":"section","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60","left":"var:preset|spacing|30","right":"var:preset|spacing|30"}}},"backgroundColor":"white","textColor":"dark","layout":{"type":"constrained"},"className":"section-about","metadata":{"name":"Über mich"}} -->
 <section class="wp-block-group alignfull section-about has-dark-color has-white-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--30)">
-	<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xx-large","fontFamily":"subhead","style":{"typography":{"fontWeight":"500","letterSpacing":"0.02em"},"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"anchor":"ueber-mich"} -->
-	<h2 id="ueber-mich" class="wp-block-heading has-text-align-center has-subhead-font-family has-xx-large-font-size" style="margin-bottom:var(--wp--preset--spacing--40);font-weight:500;letter-spacing:0.02em"><?php esc_html_e( 'Über mich', 'haarmann' ); ?></h2>
+	<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xx-large","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.06em"},"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"anchor":"ueber-mich"} -->
+	<h2 id="ueber-mich" class="wp-block-heading has-text-align-center has-xx-large-font-size" style="margin-bottom:var(--wp--preset--spacing--40);letter-spacing:0.06em;text-transform:uppercase"><?php esc_html_e( 'Über mich', 'haarmann' ); ?></h2>
 	<!-- /wp:heading -->
 
 	<!-- wp:image {"align":"center","sizeSlug":"large","linkDestination":"none","style":{"border":{"radius":"4px"}}} -->

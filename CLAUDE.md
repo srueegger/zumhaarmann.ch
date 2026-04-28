@@ -68,11 +68,30 @@ Pattern-CSS-Klassen folgen BEM-light:
 
 ### Schriften
 
-Aktuell via Google Fonts (`fonts.googleapis.com`) geladen — schnell für Dev. **Vor Produktiv-Launch lokalisieren** (DSGVO):
+**Asul** (Headlines) und **Urbanist** (Body) — beide Google Fonts, aber
+**lokal gebundlet** über die WordPress Font-API (`fontFace` in `theme.json`,
+seit WP 6.5). Kein `wp_enqueue_style` für Google-Fonts-CSS, kein Preconnect
+auf `fonts.gstatic.com`, kein DSGVO-Thema.
 
-1. Cinzel, Cormorant Garamond, Inter als woff2 herunterladen → `assets/fonts/<family>/*.woff2`
-2. `fontFace` in `theme.json` deklarieren (siehe [Block-Editor-Handbook → Fonts](https://developer.wordpress.org/themes/global-settings-and-styles/settings/typography/#fontfamilies))
-3. Google-Fonts-Enqueue + `wp_resource_hints`-Filter in `functions.php` entfernen
+Files:
+
+- `assets/fonts/asul/asul-400.woff2` (~13 KB, Latin)
+- `assets/fonts/asul/asul-700.woff2` (~13 KB, Latin) — **alle Headlines**
+- `assets/fonts/urbanist/urbanist-latin.woff2` (~28 KB, variable 100–900)
+- `assets/fonts/urbanist/urbanist-latin-ext.woff2` (~17 KB, variable 100–900, mit `unicodeRange`)
+
+WordPress generiert daraus automatisch die `@font-face`-Regeln in
+`global-styles-inline-css`. Wenn du eine zusätzliche Schrift brauchst:
+
+1. woff2 nach `assets/fonts/<family>/` legen
+2. neuen Eintrag unter `settings.typography.fontFamilies` in `theme.json`
+   anlegen mit `fontFace`-Array (`src: [ "file:./assets/fonts/..." ]`)
+3. Cache leeren (`ddev wp transient delete --all`) — das war's
+
+Die Fonts sind alle als ein Variable-File pro Sprache (Urbanist) oder zwei
+Static-Cuts (Asul Regular + Bold) eingebunden. Wenn weitere Cuts gebraucht
+werden: über die Google-Fonts-CSS-API mit modernem User-Agent ziehen
+(`curl -A "Mozilla/5.0 ... Chrome/120 ..."`), URLs aus dem CSS extrahieren.
 
 ### Bilder
 
@@ -120,8 +139,7 @@ Wenn das Thema umgesetzt wird:
 - [ ] Echte Fotos statt Platzhalter (Hero, About, Galerie)
 - [ ] Echtes Logo (PNG aktuell ist eine grobe DejaVu-Skizze)
 - [ ] Buchungs-Buttons: korrekte Booksy-/Treatwell-URL und Telefonnummer eintragen
-- [ ] Sprachschalter funktional machen (Polylang)
-- [ ] Google Fonts → lokal bundlen (DSGVO)
+- [ ] Sprachschalter funktional machen (WPML)
 - [ ] Hosting-/Deployment-Pipeline aufsetzen
 - [ ] Cookie-Banner falls Tracking-Tools dazukommen
 - [ ] Performance-Audit (Lighthouse, WebPageTest) vor Launch

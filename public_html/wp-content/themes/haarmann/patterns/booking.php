@@ -9,8 +9,8 @@
 ?>
 <!-- wp:group {"tagName":"section","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60","left":"var:preset|spacing|30","right":"var:preset|spacing|30"}}},"backgroundColor":"beige","textColor":"dark","layout":{"type":"constrained","contentSize":"640px"},"className":"section-booking","metadata":{"name":"Termin vereinbaren"}} -->
 <section class="wp-block-group alignfull section-booking has-dark-color has-beige-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--30)">
-	<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xx-large","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.12em"},"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"anchor":"termin"} -->
-	<h2 id="termin" class="wp-block-heading has-text-align-center has-xx-large-font-size" style="margin-bottom:var(--wp--preset--spacing--40);letter-spacing:0.12em;text-transform:uppercase"><?php esc_html_e( 'Termin vereinbaren', 'haarmann' ); ?></h2>
+	<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xx-large","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.06em"},"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"anchor":"termin"} -->
+	<h2 id="termin" class="wp-block-heading has-text-align-center has-xx-large-font-size" style="margin-bottom:var(--wp--preset--spacing--40);letter-spacing:0.06em;text-transform:uppercase"><?php esc_html_e( 'Termin vereinbaren', 'haarmann' ); ?></h2>
 	<!-- /wp:heading -->
 
 	<!-- wp:paragraph {"align":"center","fontSize":"large","style":{"typography":{"lineHeight":"1.55"},"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->

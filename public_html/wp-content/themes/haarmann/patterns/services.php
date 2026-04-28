@@ -9,8 +9,8 @@
 ?>
 <!-- wp:group {"tagName":"section","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60","left":"var:preset|spacing|30","right":"var:preset|spacing|30"},"blockGap":"var:preset|spacing|50"}},"backgroundColor":"dark","textColor":"cream","layout":{"type":"constrained","contentSize":"560px"},"className":"section-services","metadata":{"name":"Services"}} -->
 <section class="wp-block-group alignfull section-services has-cream-color has-dark-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--30)">
-	<!-- wp:heading {"textAlign":"center","level":2,"textColor":"gold","fontSize":"xx-large","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.12em"}},"anchor":"services"} -->
-	<h2 id="services" class="wp-block-heading has-text-align-center has-gold-color has-text-color has-xx-large-font-size" style="letter-spacing:0.12em;text-transform:uppercase"><?php esc_html_e( 'Services', 'haarmann' ); ?></h2>
+	<!-- wp:heading {"textAlign":"center","level":2,"textColor":"gold","fontSize":"xx-large","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.06em"}},"anchor":"services"} -->
+	<h2 id="services" class="wp-block-heading has-text-align-center has-gold-color has-text-color has-xx-large-font-size" style="letter-spacing:0.06em;text-transform:uppercase"><?php esc_html_e( 'Services', 'haarmann' ); ?></h2>
 	<!-- /wp:heading -->
 
 	<!-- wp:group {"style":{"spacing":{"blockGap":"0px"}},"className":"price-list price-list--haare","layout":{"type":"constrained"}} -->
