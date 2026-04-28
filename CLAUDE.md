@@ -102,13 +102,18 @@ Wenn die DB neu aufgesetzt wird, müssen diese Schritte wiederholt werden — si
 
 ## Multilingual (DE/EN)
 
-Im Design ist ein "DE"-Sprachschalter sichtbar — **noch nicht funktional implementiert**. Optionen:
+Im Design ist ein "DE"-Sprachschalter sichtbar — **noch nicht funktional implementiert**.
 
-- **Polylang** (frei, einfach) — empfohlen für 2 Sprachen
-- **WPML** — mächtiger, aber kostenpflichtig
-- Eigenbau: zwei separate Pages "/" und "/en/", Schalter via Custom Pattern
+**Stack-Entscheidung: WPML.** Der Maintainer hat eine Lifetime-Lizenz und langjährige Erfahrung; Polylang oder Eigenbau sind explizit **nicht** im Scope.
 
-Wenn das Thema kommt: Polylang installieren, alle Patterns/Inhalte übersetzen, im Header das DE/EN-Toggle dynamisch via Polylang-Switcher rendern.
+Wenn das Thema umgesetzt wird:
+
+1. WPML + WPML String Translation + WPML Translation Management installieren
+2. Sprachen DE (Default) und EN anlegen, URL-Format: language as directory (`/en/`)
+3. Alle Patterns auf translatable strings prüfen — bereits via `esc_html_e( '...', 'haarmann' )` vorbereitet, aber WPML String Translation registriert die zusätzlich on-the-fly
+4. Front-Page klonen → englische Version aufbauen, Pattern-Inhalte über WPML übersetzen
+5. Im Header das `[wpml_language_switcher]` (oder Block-Variante) statt des statischen "DE"-Paragraphen einbauen
+6. Menus pro Sprache pflegen (WPML-spezifischer Menü-Sync)
 
 ## Bekannte offene Punkte
 
