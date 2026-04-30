@@ -35,11 +35,15 @@ body {
 	border-bottom: 1px solid rgba(201, 168, 118, 0.15);
 }
 
+.site-header .wp-block-site-logo {
+	display: flex;
+	align-items: center;
+}
+
 .site-header .wp-block-site-logo img {
 	display: block;
-	border-radius: 50%;
-	background: var(--wp--preset--color--white);
-	padding: 4px;
+	height: auto;
+	width: 100%;
 }
 
 .site-header__lang {
@@ -217,9 +221,8 @@ body {
 }
 
 @media (min-width: 900px) {
-	.site-header .wp-block-site-logo img {
-		width: 80px !important;
-		height: 80px !important;
+	.site-header .wp-block-site-logo {
+		width: 200px !important;
 	}
 }
 

@@ -134,17 +134,22 @@ werden: über die Google-Fonts-CSS-API mit modernem User-Agent ziehen
 
 ### Bilder
 
-Im Repo liegen aktuell nur **Platzhalter** (mit Pillow generiert) unter `assets/images/`:
-- `hero.jpg` — warmer dunkler Verlauf, Stand-in für Barbershop-Foto
+**Logo:** `assets/images/logo.svg` ist das finale Brand-Logo (Quelle in `design/Haarmann.svg`). Wird über die Media-Library als Site-Logo gesetzt — die Theme-Datei ist Quelle der Wahrheit, der Upload eine Kopie. Bei Logo-Update: `design/Haarmann.svg` ersetzen, in `assets/images/` kopieren, dann erneut ins Media-Library importieren und Site-Logo neu setzen.
+
+**Fotos** sind aktuell **Platzhalter** (mit Pillow generierte warme Verläufe) unter `assets/images/`:
+- `hero.jpg` — Stand-in für Barbershop-Foto
 - `about.jpg`, `gallery-1..3.jpg` — Verlaufs-Platzhalter
-- `logo.png`, `logo.svg` — provisorisches Logo
 
 Sobald echtes Bildmaterial da ist:
 - Hero ≥ 1920×1080, optimiert (max ~250 KB), kein hartes Subjekt am Rand (Mobile-Crop)
 - About-Foto ~800×1000 hochkant
 - Galerie-Bilder quadratisch ~1200×1200
 
-`assets/images/logo.png` ist als Site-Logo (Media-ID 7) gesetzt — wenn ein neues Logo hochgeladen wird, ist es einfacher es im Site-Editor zu tauschen, statt die Datei zu überschreiben.
+### SVG-Uploads
+
+`functions.php` registriert MIME-Support für SVG, aber **nur für Admin-User** (`current_user_can('manage_options')`). Damit kann das Logo direkt im WP-Admin / Site-Editor getauscht werden, ohne dass Editor-Rollen Schadcode hochladen können.
+
+Für Produktiv-Betrieb mit nicht-Admin-Editoren idealerweise das Plugin **Safe SVG** nachziehen, das Inhalte beim Upload sanitisiert.
 
 ## Inhalte / WP-Konfiguration
 
@@ -176,7 +181,6 @@ Wenn das Thema umgesetzt wird:
 ## Bekannte offene Punkte
 
 - [ ] Echte Fotos statt Platzhalter (Hero, About, Galerie)
-- [ ] Echtes Logo (PNG aktuell ist eine grobe DejaVu-Skizze)
 - [ ] Buchungs-Buttons: korrekte Booksy-/Treatwell-URL und Telefonnummer eintragen
 - [ ] Sprachschalter funktional machen (WPML)
 - [ ] Hosting-/Deployment-Pipeline aufsetzen

@@ -70,6 +70,57 @@ function haarmann_editor_assets(): void {
 add_action( 'after_setup_theme', 'haarmann_editor_assets' );
 
 /**
+ * Allow SVG uploads for admin users.
+ *
+ * Hinweis: SVG-Uploads sind ein Sicherheitsrisiko (XSS via inline scripts).
+ * Für Produktiv-Betrieb mit nicht-Admin-Editoren idealerweise das Plugin
+ * "Safe SVG" einsetzen, das die SVG vor dem Speichern sanitisiert.
+ */
+function haarmann_allow_svg_upload( array $mimes ): array {
+	if ( current_user_can( 'manage_options' ) ) {
+		$mimes['svg']  = 'image/svg+xml';
+		$mimes['svgz'] = 'image/svg+xml';
+	}
+	return $mimes;
+}
+add_filter( 'upload_mimes', 'haarmann_allow_svg_upload' );
+
+/**
+ * Fix WP filetype check for SVG (it doesn't natively detect SVG content).
+ */
+function haarmann_fix_svg_filetype( array $data, string $file, string $filename, ?array $mimes, ?string $real_mime ): array {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return $data;
+	}
+	$ext = strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) );
+	if ( in_array( $ext, array( 'svg', 'svgz' ), true ) ) {
+		$data['ext']             = $ext;
+		$data['type']            = 'image/svg+xml';
+		$data['proper_filename'] = $filename;
+	}
+	return $data;
+}
+add_filter( 'wp_check_filetype_and_ext', 'haarmann_fix_svg_filetype', 10, 5 );
+
+/**
+ * Provide dimensions for SVG attachments so the Site-Logo block can render them.
+ */
+function haarmann_svg_image_size( $response, $attachment, $meta ) {
+	if ( is_array( $response ) && isset( $response['mime'] ) && 'image/svg+xml' === $response['mime'] ) {
+		$file = get_attached_file( $attachment->ID );
+		if ( $file && file_exists( $file ) ) {
+			$contents = file_get_contents( $file );
+			if ( preg_match( '/viewBox=["\']\s*\d+\s+\d+\s+([\d.]+)\s+([\d.]+)/', $contents, $m ) ) {
+				$response['width']  = (int) round( (float) $m[1] );
+				$response['height'] = (int) round( (float) $m[2] );
+			}
+		}
+	}
+	return $response;
+}
+add_filter( 'wp_prepare_attachment_for_js', 'haarmann_svg_image_size', 10, 3 );
+
+/**
  * Register block pattern categories.
  */
 function haarmann_register_pattern_categories(): void {
