@@ -71,8 +71,9 @@ kann die Home-Page mit allen Sektionen neu befüllt werden:
 ddev wp eval-file tools/seed-home-content.php
 ```
 
-Das Script rendert alle sieben Patterns einmal und schreibt das Resultat
-in den `post_content` der Home-Page (ID aus `page_on_front`-Option).
+Das Script rendert alle acht Patterns (hero, welcome, booking, services,
+about, anreise, map, gallery) und schreibt das Resultat in den
+`post_content` der Home-Page (ID aus `page_on_front`-Option).
 Idempotent — beim zweiten Aufruf wird der Inhalt überschrieben.
 
 **Achtung:** Wenn der Kunde Inhalte editiert hat, würde das Script die
@@ -145,6 +146,39 @@ Sobald echtes Bildmaterial da ist:
 - About-Foto ~800×1000 hochkant
 - Galerie-Bilder quadratisch ~1200×1200
 
+### Google Maps
+
+`patterns/map.php` rendert einen leeren `<div id="haarmann-map">`-Container, in den die **Maps JavaScript API** eine **dunkel gestylte Karte** zeichnet (matcht die Brand-Palette: `--dark`, `--gold`, `--cream`). Der Style ist als JSON-Array in [`assets/js/map.js`](public_html/wp-content/themes/haarmann/assets/js/map.js) hinterlegt — kein Map-ID aus der Cloud Console nötig.
+
+Bewusst **JS API statt Embed API**: Embed kann keine Custom-Styles. JS API kostet zwar pro Load (28'500 Loads/Monat gratis, danach $7/1k), reicht aber für eine kleine Site locker.
+
+**API-Key, Adresse und Koordinaten** werden nicht im Code gespeichert:
+
+| Konfiguration | Speicher | Default |
+|---|---|---|
+| API-Key | Konstante `HAARMANN_GMAPS_API_KEY` (in `wp-config.php`) > `wp_options`-Eintrag `haarmann_gmaps_api_key` | leer (Pattern fällt auf Google-Maps-Link zurück) |
+| Adresse | `haarmann_gmaps_address` | "Im Eisernen Zeit 1, 8057 Zürich" |
+| Koordinaten | `haarmann_gmaps_lat` / `haarmann_gmaps_lng` | 47.3892, 8.5402 (Schaffhauserplatz) |
+
+Setzen via:
+
+```bash
+ddev wp option update haarmann_gmaps_api_key "AIza..."
+ddev wp option update haarmann_gmaps_address "Im Eisernen Zeit 1, 8057 Zürich"
+ddev wp option update haarmann_gmaps_lat "47.3892"
+ddev wp option update haarmann_gmaps_lng "8.5402"
+```
+
+Resolver in [`functions.php`](public_html/wp-content/themes/haarmann/functions.php): `haarmann_get_gmaps_api_key()`, `haarmann_get_gmaps_address()`, `haarmann_get_gmaps_coords()`.
+
+**Conditional Loading:** Maps JS und Init-Script werden nur enqueued, wenn die aktuelle Page das Map-Pattern enthält (Test via String-Suche nach Class `haarmann-map` im post_content). Bei Pages ohne Karte zahlt man also nichts.
+
+**Wichtig in der Google Cloud Console:**
+
+- **Maps JavaScript API** aktivieren (NICHT nur Embed)
+- Key auf HTTP-Referrers restricten: `*.zumhaarmann.ch/*`, `*.ddev.site/*`, `localhost/*`
+- Optional Billing-Alert setzen, falls jemand massenhaft die JS-API-Loads triggert
+
 ### SVG-Uploads
 
 `functions.php` registriert MIME-Support für SVG, aber **nur für Admin-User** (`current_user_can('manage_options')`). Damit kann das Logo direkt im WP-Admin / Site-Editor getauscht werden, ohne dass Editor-Rollen Schadcode hochladen können.
@@ -157,9 +191,10 @@ Per WP-CLI angelegt — werden **nicht** versioniert (sind in der DB):
 
 - Page "Home" → als Startseite gesetzt (`page_on_front`)
 - Page "Impressum"
-- Hauptmenü mit Anchor-Links zu den Front-Page-Sektionen, an Location `primary` zugewiesen
-- Site-Logo: `assets/images/logo.png` (Media-ID 7)
+- Hauptmenü ist als Inline-Navigation in `parts/header.html` hinterlegt — keine separate `wp_navigation`-Post nötig
+- Site-Logo: `assets/images/logo.svg` (Quelle in `design/Haarmann.svg`); die Media-ID kann je nach Setup variieren
 - Permalink-Struktur: `/%postname%/`
+- Google-Maps-Optionen: `haarmann_gmaps_api_key`, `haarmann_gmaps_address`, `haarmann_gmaps_lat`, `haarmann_gmaps_lng`
 
 Wenn die DB neu aufgesetzt wird, müssen diese Schritte wiederholt werden — siehe README.md "Initiale Inhalte".
 
@@ -200,7 +235,9 @@ Wenn das Thema umgesetzt wird:
 
 ```bash
 # Schnell-Check ob die Front-Page rendert
-curl -sk https://zumhaarmann.ddev.site/ | grep -c "section-"   # sollte 6 sein
+curl -sk https://zumhaarmann.ddev.site/ | grep -c "section-"   # sollte 7 sein
+                                                                # (welcome, booking, services, about, anreise, map, gallery —
+                                                                #  hero ist ein Cover-Block, kein section-Wrapper)
 
 # Theme-Cache leeren
 ddev wp transient delete --all && ddev wp cache flush

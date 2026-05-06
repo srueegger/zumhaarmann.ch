@@ -87,8 +87,22 @@ add_filter( 'upload_mimes', 'haarmann_allow_svg_upload' );
 
 /**
  * Fix WP filetype check for SVG (it doesn't natively detect SVG content).
+ *
+ * Filter-Signatur ist von WordPress vorgegeben, daher die unused
+ * params $file/$mimes/$real_mime — wir entscheiden allein aufgrund der
+ * Dateiendung im $filename-Argument.
+ *
+ * @param array{ext: string, type: string, proper_filename: string|false} $data
+ * @param string                                                          $file
+ * @param string                                                          $filename
+ * @param string[]|null                                                   $mimes
+ * @param string|false|null                                               $real_mime
+ * @return array{ext: string, type: string, proper_filename: string|false}
+ *
+ * @phpstan-ignore parameter.unused, parameter.unused, parameter.unused
  */
 function haarmann_fix_svg_filetype( array $data, string $file, string $filename, ?array $mimes, ?string $real_mime ): array {
+	unset( $file, $mimes, $real_mime );
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return $data;
 	}
@@ -104,12 +118,18 @@ add_filter( 'wp_check_filetype_and_ext', 'haarmann_fix_svg_filetype', 10, 5 );
 
 /**
  * Provide dimensions for SVG attachments so the Site-Logo block can render them.
+ *
+ * @param array<string, mixed> $response   Vorbereitete Daten für JS.
+ * @param \WP_Post             $attachment Attachment-Post.
+ * @param array<string, mixed> $meta       Attachment-Metadata (unused).
+ * @return array<string, mixed>
  */
-function haarmann_svg_image_size( $response, $attachment, $meta ) {
-	if ( is_array( $response ) && isset( $response['mime'] ) && 'image/svg+xml' === $response['mime'] ) {
+function haarmann_svg_image_size( array $response, \WP_Post $attachment, array $meta ): array {
+	unset( $meta );
+	if ( isset( $response['mime'] ) && 'image/svg+xml' === $response['mime'] ) {
 		$file = get_attached_file( $attachment->ID );
 		if ( $file && file_exists( $file ) ) {
-			$contents = file_get_contents( $file );
+			$contents = (string) file_get_contents( $file );
 			if ( preg_match( '/viewBox=["\']\s*\d+\s+\d+\s+([\d.]+)\s+([\d.]+)/', $contents, $m ) ) {
 				$response['width']  = (int) round( (float) $m[1] );
 				$response['height'] = (int) round( (float) $m[2] );
@@ -119,6 +139,112 @@ function haarmann_svg_image_size( $response, $attachment, $meta ) {
 	return $response;
 }
 add_filter( 'wp_prepare_attachment_for_js', 'haarmann_svg_image_size', 10, 3 );
+
+/**
+ * Resolve the Google Maps API key.
+ *
+ * Reihenfolge:
+ *   1. Konstante HAARMANN_GMAPS_API_KEY (z. B. in wp-config.php) — bevorzugt
+ *      für Produktiv, weil der Key nicht in der DB liegt und Hosting-spezifisch
+ *      gesetzt werden kann.
+ *   2. wp_options-Eintrag "haarmann_gmaps_api_key" — bequem für lokal/staging
+ *      via WP-CLI: ddev wp option update haarmann_gmaps_api_key "AIza..."
+ *   3. Leerer String — Pattern fällt auf Fallback-Link zurück.
+ */
+function haarmann_get_gmaps_api_key(): string {
+	if ( defined( 'HAARMANN_GMAPS_API_KEY' ) && is_string( HAARMANN_GMAPS_API_KEY ) ) {
+		return trim( HAARMANN_GMAPS_API_KEY );
+	}
+	$option = get_option( 'haarmann_gmaps_api_key', '' );
+	return is_string( $option ) ? trim( $option ) : '';
+}
+
+/**
+ * Standort-Adresse für Google-Maps-Embeds (frei editierbar via wp_options).
+ */
+function haarmann_get_gmaps_address(): string {
+	$option = get_option( 'haarmann_gmaps_address', 'Im Eisernen Zeit 1, 8057 Zürich' );
+	return is_string( $option ) ? trim( $option ) : '';
+}
+
+/**
+ * Standort-Koordinaten für die Map (Schaffhauserplatz Zürich als sinnvoller Default).
+ *
+ * round(…, 6) damit der JSON-Output sauber bleibt — sonst landen
+ * die typischen Float-Artefakte ("47.3892000000000024328983…") in der
+ * inline-Config.
+ *
+ * @return array{lat: float, lng: float}
+ */
+function haarmann_get_gmaps_coords(): array {
+	return array(
+		'lat' => round( (float) get_option( 'haarmann_gmaps_lat', 47.3892 ), 6 ),
+		'lng' => round( (float) get_option( 'haarmann_gmaps_lng', 8.5402 ), 6 ),
+	);
+}
+
+/**
+ * Lädt Google Maps JS API + Init-Script — aber nur auf Seiten, die das
+ * Map-Pattern enthalten (Test via "haarmann-map"-Class im post_content).
+ */
+function haarmann_enqueue_maps_assets(): void {
+	if ( ! is_singular() ) {
+		return;
+	}
+	$post = get_post();
+	if ( ! $post || strpos( (string) $post->post_content, 'haarmann-map' ) === false ) {
+		return;
+	}
+	$api_key = haarmann_get_gmaps_api_key();
+	if ( ! $api_key ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'haarmann-map',
+		get_theme_file_uri( 'assets/js/map.js' ),
+		array(),
+		HAARMANN_THEME_VERSION,
+		array( 'in_footer' => true )
+	);
+
+	$coords = haarmann_get_gmaps_coords();
+	$config = array(
+		'lat'     => (float) $coords['lat'],
+		'lng'     => (float) $coords['lng'],
+		// wp_specialchars_decode löst &#039; / &amp; etc. auf, die der
+		// bloginfo-Filter sonst eincodiert — sonst tauchen die Entities
+		// im InfoWindow als Literal-Text auf.
+		'name'    => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+		'address' => haarmann_get_gmaps_address(),
+		'zoom'    => 16,
+	);
+	// json_encode für Float-Werte zwingen wir auf "shortest round-trip"
+	// (serialize_precision = -1). Sonst hängt die Ausgabe vom php.ini ab —
+	// auf Hostings mit serialize_precision = 100 (z. B. Cyon) landet sonst
+	// "47.3892000000000024328983…" in der inline Config.
+	$saved_precision = ini_set( 'serialize_precision', '-1' );
+	$config_json     = wp_json_encode( $config );
+	if ( false !== $saved_precision ) {
+		ini_set( 'serialize_precision', $saved_precision );
+	}
+	// wp_add_inline_script statt wp_localize_script: localize würde alle
+	// Werte zu Strings casten, wir brauchen lat/lng aber als JS-Number.
+	wp_add_inline_script(
+		'haarmann-map',
+		'window.haarmannMapConfig = ' . $config_json . ';',
+		'before'
+	);
+
+	wp_enqueue_script(
+		'google-maps-js',
+		'https://maps.googleapis.com/maps/api/js?key=' . rawurlencode( $api_key ) . '&loading=async&callback=haarmannMapInit',
+		array( 'haarmann-map' ),
+		null,
+		array( 'in_footer' => true, 'strategy' => 'async' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'haarmann_enqueue_maps_assets' );
 
 /**
  * Register block pattern categories.
