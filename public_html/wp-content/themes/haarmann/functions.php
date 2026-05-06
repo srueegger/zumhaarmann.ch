@@ -121,6 +121,33 @@ function haarmann_svg_image_size( $response, $attachment, $meta ) {
 add_filter( 'wp_prepare_attachment_for_js', 'haarmann_svg_image_size', 10, 3 );
 
 /**
+ * Resolve the Google Maps API key.
+ *
+ * Reihenfolge:
+ *   1. Konstante HAARMANN_GMAPS_API_KEY (z. B. in wp-config.php) — bevorzugt
+ *      für Produktiv, weil der Key nicht in der DB liegt und Hosting-spezifisch
+ *      gesetzt werden kann.
+ *   2. wp_options-Eintrag "haarmann_gmaps_api_key" — bequem für lokal/staging
+ *      via WP-CLI: ddev wp option update haarmann_gmaps_api_key "AIza..."
+ *   3. Leerer String — Pattern fällt auf Fallback-Link zurück.
+ */
+function haarmann_get_gmaps_api_key(): string {
+	if ( defined( 'HAARMANN_GMAPS_API_KEY' ) && is_string( HAARMANN_GMAPS_API_KEY ) ) {
+		return trim( HAARMANN_GMAPS_API_KEY );
+	}
+	$option = get_option( 'haarmann_gmaps_api_key', '' );
+	return is_string( $option ) ? trim( $option ) : '';
+}
+
+/**
+ * Standort-Adresse für Google-Maps-Embeds (frei editierbar via wp_options).
+ */
+function haarmann_get_gmaps_address(): string {
+	$option = get_option( 'haarmann_gmaps_address', 'Im Eisernen Zeit 1, 8057 Zürich' );
+	return is_string( $option ) ? trim( $option ) : '';
+}
+
+/**
  * Register block pattern categories.
  */
 function haarmann_register_pattern_categories(): void {

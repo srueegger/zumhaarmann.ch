@@ -145,6 +145,26 @@ Sobald echtes Bildmaterial da ist:
 - About-Foto ~800×1000 hochkant
 - Galerie-Bilder quadratisch ~1200×1200
 
+### Google Maps
+
+`patterns/map.php` bettet einen vollbreiten Google-Maps-iframe für die Studio-Adresse ein. Verwendet die **Maps Embed API** (kostenfrei, ohne Limit pro Site), kein JavaScript-SDK.
+
+API-Key + Adresse werden **nicht im Code** gespeichert, sondern entweder:
+
+1. Konstante `HAARMANN_GMAPS_API_KEY` in `wp-config.php` (empfohlen für Produktiv)
+2. wp_options-Eintrag `haarmann_gmaps_api_key` (lokal/staging via WP-CLI)
+
+Setzen via:
+
+```bash
+ddev wp option update haarmann_gmaps_api_key "AIza..."
+ddev wp option update haarmann_gmaps_address "Im Eisernen Zeit 1, 8057 Zürich"
+```
+
+Wichtig in der **Google Cloud Console**: Key auf erlaubte Domains restricten (HTTP referrers `*.zumhaarmann.ch/*`, `localhost/*`, `*.ddev.site/*`), sonst kann er von beliebigen Sites missbraucht werden. Maps Embed API + Maps JavaScript API müssen aktiviert sein.
+
+Resolver in [`functions.php`](public_html/wp-content/themes/haarmann/functions.php): `haarmann_get_gmaps_api_key()` und `haarmann_get_gmaps_address()`. Falls kein Key gesetzt ist, fällt das Pattern auf einen normalen Google-Maps-Link zurück (kein kaputter iframe).
+
 ### SVG-Uploads
 
 `functions.php` registriert MIME-Support für SVG, aber **nur für Admin-User** (`current_user_can('manage_options')`). Damit kann das Logo direkt im WP-Admin / Site-Editor getauscht werden, ohne dass Editor-Rollen Schadcode hochladen können.

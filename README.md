@@ -70,8 +70,12 @@ ddev wp post create --post_type=page --post_title='Impressum' --post_status=publ
 ddev wp option update show_on_front 'page'
 ddev wp option update page_on_front $(ddev wp post list --post_type=page --name=home --field=ID --posts_per_page=1)
 
+# Google-Maps API-Key + Adresse setzen (für die Karte-Sektion)
+ddev wp option update haarmann_gmaps_api_key "AIza..."
+ddev wp option update haarmann_gmaps_address "Im Eisernen Zeit 1, 8057 Zürich"
+
 # Home-Page mit allen Sektionen befüllen (Hero, Willkommen, Termin,
-# Services, Über mich, Anreise, Galerie als editierbare Block-Liste)
+# Services, Über mich, Anreise, Karte, Galerie als editierbare Block-Liste)
 ddev wp eval-file tools/seed-home-content.php
 ```
 
@@ -123,6 +127,7 @@ haarmann/
 │   ├── services.php                # Preisliste mit drei Gruppen
 │   ├── about.php
 │   ├── anreise.php
+│   ├── map.php                     # Google-Maps-Embed (key via wp_options)
 │   └── gallery.php
 └── assets/
     ├── css/main.css                # Front-end- & Editor-Styles
