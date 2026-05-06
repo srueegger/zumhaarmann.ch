@@ -135,6 +135,81 @@ body {
 	opacity: 0.6;
 }
 
+/* InfoWindow — Googles weisse Default-Box dunkel überschreiben.
+ * Selektoren entsprechen der Maps-JS-DOM-Struktur (Stand 2025); ggf.
+ * nach API-Updates prüfen. */
+.haarmann-map .gm-style .gm-style-iw,
+.haarmann-map .gm-style .gm-style-iw-c {
+	background: var(--wp--preset--color--dark) !important;
+	border-radius: 2px !important;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45) !important;
+	padding: 0 !important;
+	border: 1px solid rgba(201, 168, 118, 0.25) !important;
+}
+
+.haarmann-map .gm-style .gm-style-iw-d {
+	overflow: hidden !important;
+	max-height: none !important;
+	background: transparent !important;
+	padding: 0 !important;
+}
+
+/* Pfeil unter dem InfoWindow ebenfalls dunkel einfärben */
+.haarmann-map .gm-style .gm-style-iw-tc::after {
+	background: var(--wp--preset--color--dark) !important;
+	box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Close-Button (×) hellen, weil er sonst auf dunklem BG verschwindet */
+.haarmann-map .gm-ui-hover-effect {
+	filter: invert(1) brightness(0.95) !important;
+	top: 4px !important;
+	right: 4px !important;
+}
+
+/* InfoWindow-Inhalt (unsere eigene Markup) */
+.haarmann-map-info {
+	padding: 1.1rem 1.4rem 1.2rem;
+	min-width: 200px;
+	font-family: var( --wp--preset--font-family--body );
+	color: var( --wp--preset--color--cream );
+	background: var( --wp--preset--color--dark );
+}
+
+.haarmann-map-info__name {
+	margin: 0 0 0.4rem;
+	font-family: var( --wp--preset--font-family--display );
+	font-weight: 700;
+	font-size: 0.95rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var( --wp--preset--color--gold );
+	line-height: 1.25;
+}
+
+.haarmann-map-info__address {
+	margin: 0 0 0.7rem;
+	font-size: 0.875rem;
+	line-height: 1.55;
+}
+
+.haarmann-map-info__link {
+	display: inline-block;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	letter-spacing: 0.04em;
+	color: var( --wp--preset--color--gold );
+	text-decoration: none;
+	border-bottom: 1px solid rgba(201, 168, 118, 0.4);
+	padding-bottom: 1px;
+}
+
+.haarmann-map-info__link:hover,
+.haarmann-map-info__link:focus {
+	color: var( --wp--preset--color--cream );
+	border-bottom-color: var( --wp--preset--color--cream );
+}
+
 .section-about {
 	color: var(--wp--preset--color--dark);
 }

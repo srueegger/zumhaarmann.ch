@@ -7,8 +7,8 @@
  * Die Maps-JS-API ruft nach dem Laden die globale Funktion
  * `haarmannMapInit` auf (siehe `&callback=haarmannMapInit` im Script-Tag).
  *
- * Konfiguration kommt via `wp_localize_script` als `window.haarmannMapConfig`:
- *   { lat: number, lng: number, address: string, zoom: number }
+ * Konfiguration kommt via wp_add_inline_script als `window.haarmannMapConfig`:
+ *   { lat, lng, name, address, zoom }
  */
 
 ( function () {
@@ -53,7 +53,7 @@
 	];
 
 	/**
-	 * Custom Marker — goldener Punkt mit Schwarz-Schatten, passt zur Brand.
+	 * Custom Marker — goldener Punkt mit dunklem Stroke, passt zur Brand.
 	 */
 	function buildMarkerIcon( google ) {
 		return {
@@ -64,6 +64,46 @@
 			strokeColor: '#1A1612',
 			strokeWeight: 3
 		};
+	}
+
+	/**
+	 * Escape user-supplied strings before sie ins InfoWindow-HTML wandern.
+	 */
+	function esc( str ) {
+		if ( str === null || typeof str === 'undefined' ) {
+			return '';
+		}
+		return String( str )
+			.replace( /&/g, '&amp;' )
+			.replace( /</g, '&lt;' )
+			.replace( />/g, '&gt;' )
+			.replace( /"/g, '&quot;' )
+			.replace( /'/g, '&#39;' );
+	}
+
+	/**
+	 * Adresse aufsplitten in Strasse + PLZ/Ort an erstem Komma.
+	 */
+	function splitAddress( address ) {
+		var parts = String( address || '' ).split( ',' );
+		var first = ( parts[ 0 ] || '' ).trim();
+		var rest = parts.slice( 1 ).join( ',' ).trim();
+		return { street: first, city: rest };
+	}
+
+	function buildInfoContent( cfg ) {
+		var addr = splitAddress( cfg.address );
+		var mapsLink = 'https://maps.google.com/?q=' + encodeURIComponent( cfg.address || '' );
+		return (
+			'<div class="haarmann-map-info">' +
+				'<h3 class="haarmann-map-info__name">' + esc( cfg.name ) + '</h3>' +
+				'<p class="haarmann-map-info__address">' +
+					esc( addr.street ) +
+					( addr.city ? '<br>' + esc( addr.city ) : '' ) +
+				'</p>' +
+				'<a class="haarmann-map-info__link" href="' + esc( mapsLink ) + '" target="_blank" rel="noreferrer noopener">Route planen →</a>' +
+			'</div>'
+		);
 	}
 
 	/**
@@ -91,11 +131,26 @@
 			clickableIcons: false
 		} );
 
-		new google.maps.Marker( {
+		var marker = new google.maps.Marker( {
 			position: center,
 			map: map,
 			icon: buildMarkerIcon( google ),
-			title: cfg.address || ''
+			title: cfg.name || cfg.address || ''
+		} );
+
+		var infoWindow = new google.maps.InfoWindow( {
+			content: buildInfoContent( cfg ),
+			pixelOffset: new google.maps.Size( 0, -6 ),
+			disableAutoPan: false
+		} );
+
+		marker.addListener( 'click', function () {
+			infoWindow.open( { map: map, anchor: marker } );
+		} );
+
+		// Direkt beim Laden öffnen — der Standort ist die Hauptinfo der Map.
+		google.maps.event.addListenerOnce( map, 'idle', function () {
+			infoWindow.open( { map: map, anchor: marker } );
 		} );
 	};
 } )();

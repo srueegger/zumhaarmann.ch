@@ -87,8 +87,22 @@ add_filter( 'upload_mimes', 'haarmann_allow_svg_upload' );
 
 /**
  * Fix WP filetype check for SVG (it doesn't natively detect SVG content).
+ *
+ * Filter-Signatur ist von WordPress vorgegeben, daher die unused
+ * params $file/$mimes/$real_mime — wir entscheiden allein aufgrund der
+ * Dateiendung im $filename-Argument.
+ *
+ * @param array{ext: string, type: string, proper_filename: string|false} $data
+ * @param string                                                          $file
+ * @param string                                                          $filename
+ * @param string[]|null                                                   $mimes
+ * @param string|false|null                                               $real_mime
+ * @return array{ext: string, type: string, proper_filename: string|false}
+ *
+ * @phpstan-ignore parameter.unused, parameter.unused, parameter.unused
  */
 function haarmann_fix_svg_filetype( array $data, string $file, string $filename, ?array $mimes, ?string $real_mime ): array {
+	unset( $file, $mimes, $real_mime );
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return $data;
 	}
@@ -104,12 +118,18 @@ add_filter( 'wp_check_filetype_and_ext', 'haarmann_fix_svg_filetype', 10, 5 );
 
 /**
  * Provide dimensions for SVG attachments so the Site-Logo block can render them.
+ *
+ * @param array<string, mixed> $response   Vorbereitete Daten für JS.
+ * @param \WP_Post             $attachment Attachment-Post.
+ * @param array<string, mixed> $meta       Attachment-Metadata (unused).
+ * @return array<string, mixed>
  */
-function haarmann_svg_image_size( $response, $attachment, $meta ) {
-	if ( is_array( $response ) && isset( $response['mime'] ) && 'image/svg+xml' === $response['mime'] ) {
+function haarmann_svg_image_size( array $response, \WP_Post $attachment, array $meta ): array {
+	unset( $meta );
+	if ( isset( $response['mime'] ) && 'image/svg+xml' === $response['mime'] ) {
 		$file = get_attached_file( $attachment->ID );
 		if ( $file && file_exists( $file ) ) {
-			$contents = file_get_contents( $file );
+			$contents = (string) file_get_contents( $file );
 			if ( preg_match( '/viewBox=["\']\s*\d+\s+\d+\s+([\d.]+)\s+([\d.]+)/', $contents, $m ) ) {
 				$response['width']  = (int) round( (float) $m[1] );
 				$response['height'] = (int) round( (float) $m[2] );
@@ -188,6 +208,10 @@ function haarmann_enqueue_maps_assets(): void {
 	$config = array(
 		'lat'     => (float) $coords['lat'],
 		'lng'     => (float) $coords['lng'],
+		// wp_specialchars_decode löst &#039; / &amp; etc. auf, die der
+		// bloginfo-Filter sonst eincodiert — sonst tauchen die Entities
+		// im InfoWindow als Literal-Text auf.
+		'name'    => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 		'address' => haarmann_get_gmaps_address(),
 		'zoom'    => 16,
 	);
