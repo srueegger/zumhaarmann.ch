@@ -170,12 +170,16 @@ function haarmann_get_gmaps_address(): string {
 /**
  * Standort-Koordinaten für die Map (Schaffhauserplatz Zürich als sinnvoller Default).
  *
+ * round(…, 6) damit der JSON-Output sauber bleibt — sonst landen
+ * die typischen Float-Artefakte ("47.3892000000000024328983…") in der
+ * inline-Config.
+ *
  * @return array{lat: float, lng: float}
  */
 function haarmann_get_gmaps_coords(): array {
 	return array(
-		'lat' => (float) get_option( 'haarmann_gmaps_lat', 47.3892 ),
-		'lng' => (float) get_option( 'haarmann_gmaps_lng', 8.5402 ),
+		'lat' => round( (float) get_option( 'haarmann_gmaps_lat', 47.3892 ), 6 ),
+		'lng' => round( (float) get_option( 'haarmann_gmaps_lng', 8.5402 ), 6 ),
 	);
 }
 
@@ -215,11 +219,20 @@ function haarmann_enqueue_maps_assets(): void {
 		'address' => haarmann_get_gmaps_address(),
 		'zoom'    => 16,
 	);
+	// json_encode für Float-Werte zwingen wir auf "shortest round-trip"
+	// (serialize_precision = -1). Sonst hängt die Ausgabe vom php.ini ab —
+	// auf Hostings mit serialize_precision = 100 (z. B. Cyon) landet sonst
+	// "47.3892000000000024328983…" in der inline Config.
+	$saved_precision = ini_set( 'serialize_precision', '-1' );
+	$config_json     = wp_json_encode( $config );
+	if ( false !== $saved_precision ) {
+		ini_set( 'serialize_precision', $saved_precision );
+	}
 	// wp_add_inline_script statt wp_localize_script: localize würde alle
 	// Werte zu Strings casten, wir brauchen lat/lng aber als JS-Number.
 	wp_add_inline_script(
 		'haarmann-map',
-		'window.haarmannMapConfig = ' . wp_json_encode( $config ) . ';',
+		'window.haarmannMapConfig = ' . $config_json . ';',
 		'before'
 	);
 
