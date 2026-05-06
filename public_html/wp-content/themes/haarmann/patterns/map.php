@@ -3,7 +3,7 @@
  * Title: Karte
  * Slug: haarmann/map
  * Categories: haarmann
- * Description: Vollbreite Google-Maps-Einbettung für die Studio-Adresse. Liest API-Key + Adresse aus wp_options (oder Konstante HAARMANN_GMAPS_API_KEY).
+ * Description: Vollbreite Google-Maps-Einbettung (dunkel gestylt) für die Studio-Adresse. API-Key, Adresse und Koordinaten kommen aus wp_options bzw. der Konstante HAARMANN_GMAPS_API_KEY.
  * Keywords: karte, map, google maps, standort
  */
 
@@ -16,14 +16,7 @@ $maps_link = 'https://maps.google.com/?q=' . $query;
 <section class="wp-block-group alignfull section-map has-dark-background-color has-background">
 	<?php if ( $api_key ) : ?>
 	<!-- wp:html -->
-	<div class="haarmann-map">
-		<iframe
-			src="https://www.google.com/maps/embed/v1/place?key=<?php echo esc_attr( $api_key ); ?>&amp;q=<?php echo $query; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — already URL-encoded ?>&amp;zoom=16&amp;language=de"
-			loading="lazy"
-			referrerpolicy="no-referrer-when-downgrade"
-			allowfullscreen
-			title="<?php echo esc_attr( sprintf( __( 'Standort: %s', 'haarmann' ), $address ) ); ?>"></iframe>
-	</div>
+	<div id="haarmann-map" class="haarmann-map" role="img" aria-label="<?php echo esc_attr( sprintf( __( 'Karte: %s', 'haarmann' ), $address ) ); ?>"></div>
 	<!-- /wp:html -->
 	<?php else : ?>
 	<!-- wp:paragraph {"align":"center","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}}} -->

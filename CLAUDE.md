@@ -147,23 +147,36 @@ Sobald echtes Bildmaterial da ist:
 
 ### Google Maps
 
-`patterns/map.php` bettet einen vollbreiten Google-Maps-iframe für die Studio-Adresse ein. Verwendet die **Maps Embed API** (kostenfrei, ohne Limit pro Site), kein JavaScript-SDK.
+`patterns/map.php` rendert einen leeren `<div id="haarmann-map">`-Container, in den die **Maps JavaScript API** eine **dunkel gestylte Karte** zeichnet (matcht die Brand-Palette: `--dark`, `--gold`, `--cream`). Der Style ist als JSON-Array in [`assets/js/map.js`](public_html/wp-content/themes/haarmann/assets/js/map.js) hinterlegt — kein Map-ID aus der Cloud Console nötig.
 
-API-Key + Adresse werden **nicht im Code** gespeichert, sondern entweder:
+Bewusst **JS API statt Embed API**: Embed kann keine Custom-Styles. JS API kostet zwar pro Load (28'500 Loads/Monat gratis, danach $7/1k), reicht aber für eine kleine Site locker.
 
-1. Konstante `HAARMANN_GMAPS_API_KEY` in `wp-config.php` (empfohlen für Produktiv)
-2. wp_options-Eintrag `haarmann_gmaps_api_key` (lokal/staging via WP-CLI)
+**API-Key, Adresse und Koordinaten** werden nicht im Code gespeichert:
+
+| Konfiguration | Speicher | Default |
+|---|---|---|
+| API-Key | Konstante `HAARMANN_GMAPS_API_KEY` (in `wp-config.php`) > `wp_options`-Eintrag `haarmann_gmaps_api_key` | leer (Pattern fällt auf Google-Maps-Link zurück) |
+| Adresse | `haarmann_gmaps_address` | "Im Eisernen Zeit 1, 8057 Zürich" |
+| Koordinaten | `haarmann_gmaps_lat` / `haarmann_gmaps_lng` | 47.3892, 8.5402 (Schaffhauserplatz) |
 
 Setzen via:
 
 ```bash
 ddev wp option update haarmann_gmaps_api_key "AIza..."
 ddev wp option update haarmann_gmaps_address "Im Eisernen Zeit 1, 8057 Zürich"
+ddev wp option update haarmann_gmaps_lat "47.3892"
+ddev wp option update haarmann_gmaps_lng "8.5402"
 ```
 
-Wichtig in der **Google Cloud Console**: Key auf erlaubte Domains restricten (HTTP referrers `*.zumhaarmann.ch/*`, `localhost/*`, `*.ddev.site/*`), sonst kann er von beliebigen Sites missbraucht werden. Maps Embed API + Maps JavaScript API müssen aktiviert sein.
+Resolver in [`functions.php`](public_html/wp-content/themes/haarmann/functions.php): `haarmann_get_gmaps_api_key()`, `haarmann_get_gmaps_address()`, `haarmann_get_gmaps_coords()`.
 
-Resolver in [`functions.php`](public_html/wp-content/themes/haarmann/functions.php): `haarmann_get_gmaps_api_key()` und `haarmann_get_gmaps_address()`. Falls kein Key gesetzt ist, fällt das Pattern auf einen normalen Google-Maps-Link zurück (kein kaputter iframe).
+**Conditional Loading:** Maps JS und Init-Script werden nur enqueued, wenn die aktuelle Page das Map-Pattern enthält (Test via String-Suche nach Class `haarmann-map` im post_content). Bei Pages ohne Karte zahlt man also nichts.
+
+**Wichtig in der Google Cloud Console:**
+
+- **Maps JavaScript API** aktivieren (NICHT nur Embed)
+- Key auf HTTP-Referrers restricten: `*.zumhaarmann.ch/*`, `*.ddev.site/*`, `localhost/*`
+- Optional Billing-Alert setzen, falls jemand massenhaft die JS-API-Loads triggert
 
 ### SVG-Uploads
 

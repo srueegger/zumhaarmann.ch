@@ -148,6 +148,68 @@ function haarmann_get_gmaps_address(): string {
 }
 
 /**
+ * Standort-Koordinaten für die Map (Schaffhauserplatz Zürich als sinnvoller Default).
+ *
+ * @return array{lat: float, lng: float}
+ */
+function haarmann_get_gmaps_coords(): array {
+	return array(
+		'lat' => (float) get_option( 'haarmann_gmaps_lat', 47.3892 ),
+		'lng' => (float) get_option( 'haarmann_gmaps_lng', 8.5402 ),
+	);
+}
+
+/**
+ * Lädt Google Maps JS API + Init-Script — aber nur auf Seiten, die das
+ * Map-Pattern enthalten (Test via "haarmann-map"-Class im post_content).
+ */
+function haarmann_enqueue_maps_assets(): void {
+	if ( ! is_singular() ) {
+		return;
+	}
+	$post = get_post();
+	if ( ! $post || strpos( (string) $post->post_content, 'haarmann-map' ) === false ) {
+		return;
+	}
+	$api_key = haarmann_get_gmaps_api_key();
+	if ( ! $api_key ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'haarmann-map',
+		get_theme_file_uri( 'assets/js/map.js' ),
+		array(),
+		HAARMANN_THEME_VERSION,
+		array( 'in_footer' => true )
+	);
+
+	$coords = haarmann_get_gmaps_coords();
+	$config = array(
+		'lat'     => (float) $coords['lat'],
+		'lng'     => (float) $coords['lng'],
+		'address' => haarmann_get_gmaps_address(),
+		'zoom'    => 16,
+	);
+	// wp_add_inline_script statt wp_localize_script: localize würde alle
+	// Werte zu Strings casten, wir brauchen lat/lng aber als JS-Number.
+	wp_add_inline_script(
+		'haarmann-map',
+		'window.haarmannMapConfig = ' . wp_json_encode( $config ) . ';',
+		'before'
+	);
+
+	wp_enqueue_script(
+		'google-maps-js',
+		'https://maps.googleapis.com/maps/api/js?key=' . rawurlencode( $api_key ) . '&loading=async&callback=haarmannMapInit',
+		array( 'haarmann-map' ),
+		null,
+		array( 'in_footer' => true, 'strategy' => 'async' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'haarmann_enqueue_maps_assets' );
+
+/**
  * Register block pattern categories.
  */
 function haarmann_register_pattern_categories(): void {
