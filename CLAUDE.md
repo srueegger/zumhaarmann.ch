@@ -71,8 +71,9 @@ kann die Home-Page mit allen Sektionen neu befüllt werden:
 ddev wp eval-file tools/seed-home-content.php
 ```
 
-Das Script rendert alle sieben Patterns einmal und schreibt das Resultat
-in den `post_content` der Home-Page (ID aus `page_on_front`-Option).
+Das Script rendert alle acht Patterns (hero, welcome, booking, services,
+about, anreise, map, gallery) und schreibt das Resultat in den
+`post_content` der Home-Page (ID aus `page_on_front`-Option).
 Idempotent — beim zweiten Aufruf wird der Inhalt überschrieben.
 
 **Achtung:** Wenn der Kunde Inhalte editiert hat, würde das Script die
@@ -190,9 +191,10 @@ Per WP-CLI angelegt — werden **nicht** versioniert (sind in der DB):
 
 - Page "Home" → als Startseite gesetzt (`page_on_front`)
 - Page "Impressum"
-- Hauptmenü mit Anchor-Links zu den Front-Page-Sektionen, an Location `primary` zugewiesen
-- Site-Logo: `assets/images/logo.png` (Media-ID 7)
+- Hauptmenü ist als Inline-Navigation in `parts/header.html` hinterlegt — keine separate `wp_navigation`-Post nötig
+- Site-Logo: `assets/images/logo.svg` (Quelle in `design/Haarmann.svg`); die Media-ID kann je nach Setup variieren
 - Permalink-Struktur: `/%postname%/`
+- Google-Maps-Optionen: `haarmann_gmaps_api_key`, `haarmann_gmaps_address`, `haarmann_gmaps_lat`, `haarmann_gmaps_lng`
 
 Wenn die DB neu aufgesetzt wird, müssen diese Schritte wiederholt werden — siehe README.md "Initiale Inhalte".
 
@@ -233,7 +235,9 @@ Wenn das Thema umgesetzt wird:
 
 ```bash
 # Schnell-Check ob die Front-Page rendert
-curl -sk https://zumhaarmann.ddev.site/ | grep -c "section-"   # sollte 6 sein
+curl -sk https://zumhaarmann.ddev.site/ | grep -c "section-"   # sollte 7 sein
+                                                                # (welcome, booking, services, about, anreise, map, gallery —
+                                                                #  hero ist ein Cover-Block, kein section-Wrapper)
 
 # Theme-Cache leeren
 ddev wp transient delete --all && ddev wp cache flush

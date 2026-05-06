@@ -70,9 +70,11 @@ ddev wp post create --post_type=page --post_title='Impressum' --post_status=publ
 ddev wp option update show_on_front 'page'
 ddev wp option update page_on_front $(ddev wp post list --post_type=page --name=home --field=ID --posts_per_page=1)
 
-# Google-Maps API-Key + Adresse setzen (für die Karte-Sektion)
+# Google-Maps API-Key + Adresse + Koordinaten setzen (für die Karte-Sektion)
 ddev wp option update haarmann_gmaps_api_key "AIza..."
 ddev wp option update haarmann_gmaps_address "Im Eisernen Zeit 1, 8057 Zürich"
+ddev wp option update haarmann_gmaps_lat "47.3892"
+ddev wp option update haarmann_gmaps_lng "8.5402"
 
 # Home-Page mit allen Sektionen befüllen (Hero, Willkommen, Termin,
 # Services, Über mich, Anreise, Karte, Galerie als editierbare Block-Liste)
@@ -131,7 +133,10 @@ haarmann/
 │   └── gallery.php
 └── assets/
     ├── css/main.css                # Front-end- & Editor-Styles
-    └── images/                     # Logo + Platzhalter
+    ├── js/map.js                   # Google-Maps Init mit dark style
+    ├── fonts/asul/                 # Asul Regular + Bold (Latin, woff2)
+    ├── fonts/urbanist/             # Urbanist Variable 100–900 (Latin + Latin-Ext)
+    └── images/                     # Logo + Foto-Platzhalter
 ```
 
 ### Designsystem
@@ -145,16 +150,24 @@ haarmann/
 
 Schriften werden über `fontFace`-Einträge in `theme.json` aus `assets/fonts/` geladen — keine Drittanbieter-CDN, keine DSGVO-Hürde. Siehe [`CLAUDE.md`](CLAUDE.md) wie weitere Cuts hinzugefügt werden.
 
-### Patterns
+### Patterns vs. Page-Content
 
-Jede Sektion ist ein eigenes Pattern (`patterns/*.php`) und kann via Site-Editor in jeder Page eingefügt werden. Die Front-Page ruft alle Patterns nacheinander auf.
+Jede Sektion ist ein eigenes Pattern unter `patterns/*.php`. Patterns sind **Vorlagen für den Block-Inserter** (sichtbar unter "Patterns → Haarmann").
+
+Das Template `templates/front-page.html` ist eine schlanke Hülle (Header + `<main>` mit `<!-- wp:post-content /-->` + Footer) — die eigentlichen Sektionen leben als **echte Block-Liste im `post_content` der Home-Page** und sind dort vom Kunden direkt im Editor bearbeitbar. Beim Setup wird dieser Inhalt einmalig via `tools/seed-home-content.php` aus den Patterns gerendert.
+
+### Karte (Google Maps)
+
+`patterns/map.php` rendert einen leeren `<div id="haarmann-map">`-Container — die Karte wird via **Maps JavaScript API** mit einem **dunkel-warmen Custom-Style** gezeichnet (passt zur Brand-Palette). API-Key, Adresse und Koordinaten kommen aus `wp_options` (siehe Setup-Schritt oben). Maps-JS wird nur auf Pages enqueued, die das Map-Pattern enthalten — Pages ohne Karte zahlen nichts.
+
+In der Google Cloud Console muss **Maps JavaScript API** aktiviert sein und der Key idealerweise auf HTTP-Referrers für `*.zumhaarmann.ch/*`, `*.ddev.site/*`, `localhost/*` restricted. Details in [`CLAUDE.md`](CLAUDE.md).
 
 ### Responsive
 
 - Mobile-First mit fluiden Tokens — kein expliziter Breakpoint-Set in der Standardansicht nötig
 - Zusätzliche Breakpoints in [`assets/css/main.css`](public_html/wp-content/themes/haarmann/assets/css/main.css):
   - `≥ 600px` → Buchungs-Buttons nebeneinander
-  - `≥ 900px` → Logo grösser
+  - `≥ 900px` → Logo grösser, Karte breiter (21:9 statt 16:9)
 
 ---
 

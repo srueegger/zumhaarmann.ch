@@ -103,6 +103,10 @@ body {
  * -------------------------------------------------------------------------- */
 .section-map {
 	padding: 0;
+	/* Karte schliesst bündig an Anreise (oben) und Galerie (unten) an —
+	 * die globale Block-Gap aus is-layout-constrained explizit aushebeln. */
+	margin-block-start: 0;
+	margin-block-end: 0;
 }
 
 .haarmann-map {
