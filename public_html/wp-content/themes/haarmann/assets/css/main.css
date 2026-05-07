@@ -23,6 +23,19 @@ body {
 }
 
 /* -----------------------------------------------------------------------------
+ * Layout-Korrekturen für die wp-site-blocks-Defaults
+ * -------------------------------------------------------------------------- */
+/* WP setzt :where(.wp-site-blocks) > * { margin-block-start: spacing--30 }.
+ * Header ist :first-child und kriegt 0, aber Main als 2. Child bekäme einen
+ * Spalt — Hero soll bündig unter dem Header anschliessen, daher Margin killen.
+ * Selbe Regel für die Bottom-Seite, damit der letzte Section-Block bündig
+ * an den Footer anschliesst. */
+.wp-site-blocks > main {
+	margin-block-start: 0;
+	margin-block-end: 0;
+}
+
+/* -----------------------------------------------------------------------------
  * Site Header
  * -------------------------------------------------------------------------- */
 .site-header {
@@ -274,10 +287,16 @@ body {
 }
 
 /* -----------------------------------------------------------------------------
- * Hero
+ * Hero — einfacher alignfull-Image-Block, Höhe folgt dem Bild
  * -------------------------------------------------------------------------- */
-.wp-block-cover.alignfull {
-	margin-top: 0;
+.section-hero {
+	margin: 0;
+}
+
+.section-hero img {
+	display: block;
+	width: 100%;
+	height: auto;
 }
 
 /* -----------------------------------------------------------------------------
@@ -332,6 +351,7 @@ body {
 		font-size: 1.125rem;
 	}
 }
+
 
 @media (min-width: 900px) {
 	.site-header .wp-block-site-logo {
