@@ -346,14 +346,6 @@ body {
 	}
 }
 
-/* Hero auf Mobile: weniger hoch damit object-fit:cover nicht zu stark
- * horizontal beschneidet — sonst verschwindet die Gesichtsseite.
- * 55vh ist der Sweet-Spot: Hero bleibt impactful, Kopf passt komplett rein. */
-@media (max-width: 768px) {
-	.wp-block-cover.alignfull {
-		min-height: 55vh !important;
-	}
-}
 
 @media (min-width: 900px) {
 	.site-header .wp-block-site-logo {
