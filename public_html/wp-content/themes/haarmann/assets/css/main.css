@@ -23,6 +23,19 @@ body {
 }
 
 /* -----------------------------------------------------------------------------
+ * Layout-Korrekturen für die wp-site-blocks-Defaults
+ * -------------------------------------------------------------------------- */
+/* WP setzt :where(.wp-site-blocks) > * { margin-block-start: spacing--30 }.
+ * Header ist :first-child und kriegt 0, aber Main als 2. Child bekäme einen
+ * Spalt — Hero soll bündig unter dem Header anschliessen, daher Margin killen.
+ * Selbe Regel für die Bottom-Seite, damit der letzte Section-Block bündig
+ * an den Footer anschliesst. */
+.wp-site-blocks > main {
+	margin-block-start: 0;
+	margin-block-end: 0;
+}
+
+/* -----------------------------------------------------------------------------
  * Site Header
  * -------------------------------------------------------------------------- */
 .site-header {

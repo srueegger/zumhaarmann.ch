@@ -13,21 +13,11 @@
 	<h2 id="galerie" class="wp-block-heading has-text-align-center has-gold-color has-text-color has-xx-large-font-size" style="margin-bottom:var(--wp--preset--spacing--40);letter-spacing:0.06em;text-transform:uppercase"><?php esc_html_e( 'Galerie', 'haarmann' ); ?></h2>
 	<!-- /wp:heading -->
 
-	<!-- wp:gallery {"columns":3,"linkTo":"none","sizeSlug":"medium","align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|20","top":"var:preset|spacing|20"}}}} -->
-	<figure class="wp-block-gallery alignwide has-nested-images columns-3 is-cropped">
-		<!-- wp:image {"sizeSlug":"medium","linkDestination":"none"} -->
-		<figure class="wp-block-image size-medium"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/gallery-1.jpg' ) ); ?>" alt=""/></figure>
-		<!-- /wp:image -->
-
-		<!-- wp:image {"sizeSlug":"medium","linkDestination":"none"} -->
-		<figure class="wp-block-image size-medium"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/gallery-2.jpg' ) ); ?>" alt=""/></figure>
-		<!-- /wp:image -->
-
-		<!-- wp:image {"sizeSlug":"medium","linkDestination":"none"} -->
-		<figure class="wp-block-image size-medium"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/gallery-3.jpg' ) ); ?>" alt=""/></figure>
-		<!-- /wp:image -->
-	</figure>
-	<!-- /wp:gallery -->
+	<!-- wp:html -->
+	<!-- Elfsight Instagram Feed | Zum Haarmann -->
+	<script src="https://elfsightcdn.com/platform.js" async></script>
+	<div class="elfsight-app-d22037c2-f34c-47f1-9ae5-cc92d4be9cb8" data-elfsight-app-lazy></div>
+	<!-- /wp:html -->
 
 	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
 	<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
