@@ -287,19 +287,16 @@ body {
 }
 
 /* -----------------------------------------------------------------------------
- * Hero
+ * Hero — einfacher alignfull-Image-Block, Höhe folgt dem Bild
  * -------------------------------------------------------------------------- */
-.wp-block-cover.alignfull {
-	margin-top: 0;
-	background-color: var(--wp--preset--color--dark);
+.section-hero {
+	margin: 0;
 }
 
-/* Bild im Hero-Cover komplett zeigen (kein Crop) — falls das Source-Bild
- * mal nicht exakt 16:9 ist, entstehen schmale dunkle Bänder oben/unten oder
- * links/rechts in der Theme-Farbe. Besser sichtbar als willkürlich beschnittenes
- * Motiv. */
-.wp-block-cover.alignfull img.wp-block-cover__image-background {
-	object-fit: contain;
+.section-hero img {
+	display: block;
+	width: 100%;
+	height: auto;
 }
 
 /* -----------------------------------------------------------------------------
